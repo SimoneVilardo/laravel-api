@@ -132,7 +132,7 @@ class ProjectController extends Controller
     {
         $project->technologies()->sync([]);
 
-        Storage::delete($project->image);
+        !is_null($project->image) && Storage::delete($project->image);
 
         $title_project = $project->title;
 
