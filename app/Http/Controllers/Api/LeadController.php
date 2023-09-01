@@ -14,22 +14,32 @@ class LeadController extends Controller
     public function store(Request $request){
         $data = $request->all();
 
+        //validiamo i dati senza l'utilizzo della classe storerequest
         $validator = Validator::make($data, [
-            'name'     => 'required',
-            'email'    => 'required|email',
-            'message'  => 'required'
+            'name' => 'required',
+            'email' => 'required|email',
+            'content' => 'required'
         ]);
 
+        //verifichiamo se la richiesta non va a buon fine
         if($validator->fails()){
             return response()->json([
-                'success'  => true
+                'success' => false,
+                'errors' => $validator->errors()
             ]);
         }
 
+        //salvo i dati nel database
         $new_lead = new Lead();
         $new_lead->fill($data);
         $new_lead->save();
 
-        Mail::to('contact@boolpress.com')->send(new NewContact($new_lead));
+        //invio la mail
+        Mail::to('contact@boolfoglio.com')->send(new NewContact($new_lead));
+
+        //diamo una risposta all'utente
+        return response()->json([
+            'success' => true
+        ]);
     }
 }
